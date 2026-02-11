@@ -57,14 +57,14 @@ Contém arquivos de configuração centralizados:
 
 Funções auxiliares reutilizáveis:
 
-- **incremental_bronze.py**: Função `read_csv_with_quotes` para leitura robusta de CSV com tratamento de delimitadores dentro de aspas
+- **bronze_csv_loader.py**: Função `read_csv_with_quotes` para leitura robusta de CSV com tratamento de delimitadores dentro de aspas
 
 #### Bronze/
 
 Notebooks de ingestão de dados brutos:
 
-- **ingestion_cnpj.py**: Processa arquivos ZIP de CNPJ (Empresas, Estabelecimentos, Sócios)
-- **ingestion_balancacomercial.py**: Processa arquivos CSV de Importação/Exportação
+- **ingestao_incremental_cnpj.py**: Processa arquivos ZIP de CNPJ (Empresas, Estabelecimentos, Sócios)
+- **ingestao_incremental_balancacomercial.py**: Processa arquivos CSV de Importação/Exportação
 
 Características:
 - Controle incremental (evita reprocessamento)
