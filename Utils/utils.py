@@ -141,4 +141,57 @@ def non_values_to_not_informed(
             )
     return df
 
+from pyspark.sql.functions import (
+    input_file_name,
+    current_timestamp,
+    col,
+    lit
+)
+
+def ingestion_bronze(
+    input_path,
+    output_path,
+    tipo_operacao,
+    expected_cols,
+    schema
+):
+
+    arquivos_novos = obter_arquivos_novos(input_path)
+
+    if not arquivos_novos:
+        print("✔ Nenhum arquivo novo para processar")
+        return
+
+    for a in arquivos_novos:
+
+        print(f"Processando: {a['name']}")
+
+        # === leitura robusta com aspas e multiline ===
+        df_raw, df_corrupt, cols = read_csv_with_quotes(
+            spark=spark,
+            input_path=a["path"],
+            delimiter=";",
+            encoding="iso-8859-1",
+            recursive=False,
+            header=True,
+            schema=schema,
+            expected_cols=expected_cols,
+            multiline=True,
+            quote="\"",
+            escape="\"",
+            mode="PERMISSIVE",
+            corrupt_col="_corrupt_record",
+            ignore_leading_trailing_ws=True
+        )
+
+        # Bronze enrichment
+        df_bronze = (
+            df_raw
+            .withColumn("origin_path_name", input_file_name())
+            .withColumn("ingestion_dt", current_timestamp())
+        )
+
+        # Registro de controle SOMENTE após sucesso
+        registrar_arquivo_processado(a, df_bronze)
+
     
